@@ -134,6 +134,73 @@ pintos_init (void)
     run_actions (argv);
   } else {
     // TODO: no command line passed to kernel. Run interactively 
+    
+    // creating a buffer
+    // input_init();
+    char * buffer = (char *) malloc(20 * sizeof(char));
+    // int index;
+    // char * command;
+    int64_t numTicks = 0;
+
+    printf("#####################################################################\n");
+    printf("                          Starting *HaS*\n");
+    printf("#####################################################################\n");
+    
+    do {
+      printf("#######*HaS*> ");
+      int index = 0;
+
+      while (1)
+      {
+        char c = input_getc();
+        if(c == 13){
+          break;
+        } else if(c == 8){
+          index--;
+          if(index < 0) index = 0;
+          printf("\b \b");
+          continue;
+        } else {
+          printf("%c", c);
+          buffer[index] = c;
+        }
+        index++;
+        
+      }
+
+      buffer[index] = '\0';
+
+      printf("\n");
+
+      if(!strcmp(buffer, "exit")){
+        printf("#####################################################################\n");
+        printf("                  Exiting *HaS*...Have a Nice Day!\n");
+        printf("#####################################################################\n");
+        break;
+      } else if(!strcmp(buffer, "whoami")) {
+        printf("Hasini - 190647X\n");
+      } else if(!strcmp(buffer, "shutdown")){
+        shutdown_configure(SHUTDOWN_POWER_OFF);
+        break;
+      } else if(!strcmp(buffer, "time")){
+        numTicks = timer_ticks(); // from devices/timer.c - returns the number of timer ticks since the OS booted
+        printf("Number of seconds passed since Unix epoch %ld\n", rtc_get_time());
+      } else if(!strcmp(buffer, "ram")){
+        printf ("Amount of RAM available for the OS: %'"PRIu32" kB RAM...\n",
+          init_ram_pages * PGSIZE / 1024);
+      } else if(!strcmp(buffer, "thread")){
+        thread_print_stats();
+      } else if(!strcmp(buffer, "priority")){
+        printf("priority of the current thread is %d\n", thread_get_priority());
+      } else {
+        printf("command not found\n");
+      }
+
+      free(buffer);
+      buffer = (char *) malloc(10 * sizeof(char));
+    } while (1);
+    
+    
   }
 
   /* Finish up. */
